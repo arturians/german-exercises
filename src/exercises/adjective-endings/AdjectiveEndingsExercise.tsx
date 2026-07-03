@@ -1,4 +1,13 @@
-import { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react';
+import {
+  ChangeEvent,
+  FormEvent,
+  KeyboardEvent,
+  ReactNode,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import './adjective-endings.css';
 import {
   CASES,
@@ -14,12 +23,12 @@ type AdjectiveEndingsExerciseProps = {
   onBack: () => void;
 };
 
-function renderSentence(sentence: string) {
+function renderSentence(sentence: string, gap: ReactNode) {
   const [before, after] = sentence.split('__');
   return (
     <>
       {before}
-      <span className="sentence-gap">__</span>
+      {gap}
       {after}
     </>
   );
@@ -70,6 +79,7 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
   const [error, setError] = useState('');
   const [fileName, setFileName] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const answerInputRef = useRef<HTMLInputElement>(null);
 
   const currentExercise = exercises[currentIndex];
   const isCorrect = feedback === 'correct';
@@ -78,6 +88,12 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
   const progress = useMemo(() => {
     return `${currentIndex + 1} / ${exercises.length}`;
   }, [currentIndex, exercises.length]);
+
+  useEffect(() => {
+    if (isSetupComplete) {
+      answerInputRef.current?.focus();
+    }
+  }, [currentIndex, isSetupComplete]);
 
   function resetQuiz(nextExercises: AdjectiveEndingExercise[], nextFileName: string) {
     setExercises(nextExercises);
@@ -119,6 +135,13 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
     window.setTimeout(() => {
       setFeedback((existing) => (existing === 'wrong' ? 'idle' : existing));
     }, 520);
+  }
+
+  function handleAnswerKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key === 'ArrowRight' && isCorrect) {
+      event.preventDefault();
+      goToNext();
+    }
   }
 
   function goToNext() {
@@ -198,21 +221,38 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
         </header>
 
         <div className="sentence-panel">
-          <p className="sentence">{renderSentence(currentExercise.sentence)}</p>
-          <form className="answer-row" onSubmit={handleSubmit}>
-            <label htmlFor="ending-answer">Ending</label>
-            <input
-              id="ending-answer"
-              type="text"
-              value={answer}
-              autoComplete="off"
-              placeholder="-e"
-              onChange={(event) => setAnswer(event.target.value)}
-            />
-            <button type="submit">Check</button>
-            <button type="button" disabled={!isCorrect} onClick={goToNext}>
-              Next
-            </button>
+          <form className="sentence-form" onSubmit={handleSubmit}>
+            <p className="sentence">
+              {renderSentence(
+                currentExercise.sentence,
+                <span className="sentence-gap">
+                  <label className="visually-hidden" htmlFor="ending-answer">
+                    Ending
+                  </label>
+                  <input
+                    ref={answerInputRef}
+                    id="ending-answer"
+                    type="text"
+                    value={answer}
+                    autoComplete="off"
+                    placeholder="-e"
+                    onChange={(event) => setAnswer(event.target.value)}
+                    onKeyDown={handleAnswerKeyDown}
+                  />
+                </span>,
+              )}
+            </p>
+
+            <div className="answer-actions">
+              <button type="submit">
+                <span>Check</span>
+                <kbd>Enter</kbd>
+              </button>
+              <button type="button" disabled={!isCorrect} onClick={goToNext}>
+                <span>Next</span>
+                <kbd>→</kbd>
+              </button>
+            </div>
           </form>
 
           <div aria-live="polite" className={`feedback-line ${feedback}`}>
