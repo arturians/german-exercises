@@ -1,9 +1,16 @@
 import { CASES } from './data';
-import { AdjectiveEndingExercise, Gender, GrammarCase, NumberValue } from './types';
+import {
+  AdjectiveEndingExercise,
+  DeclensionType,
+  Gender,
+  GrammarCase,
+  NumberValue,
+} from './types';
 
 const COLUMN_ALIASES = {
   sentence: ['sentence', 'sentance', 'satz', 'text'],
   ending: ['ending', 'right ending', 'right_ending', 'endung', 'answer'],
+  declension: ['declension', 'declension_type', 'article type', 'article_type', 'adjective type'],
   caseName: ['case', 'caseName', 'case_name', 'fall', 'kasus'],
   gender: ['gender', 'geschlecht', 'genus'],
   number: ['number', 'plural or singular', 'plural_singular', 'numerus'],
@@ -25,6 +32,37 @@ function parseCase(value: string): GrammarCase | null {
   const normalized = normalizeValue(value);
   const match = CASES.find((caseName) => normalizeValue(caseName) === normalized);
   return match ?? null;
+}
+
+function parseDeclension(value: string): DeclensionType | null {
+  const normalized = normalizeValue(value);
+  if (
+    normalized === 'weak' ||
+    normalized === 'schwach' ||
+    normalized === 'definite' ||
+    normalized === 'der_word' ||
+    normalized === 'der_word_article'
+  ) {
+    return 'weak';
+  }
+  if (
+    normalized === 'mixed' ||
+    normalized === 'gemischt' ||
+    normalized === 'indefinite' ||
+    normalized === 'ein_word' ||
+    normalized === 'possessive'
+  ) {
+    return 'mixed';
+  }
+  if (
+    normalized === 'strong' ||
+    normalized === 'stark' ||
+    normalized === 'no_article' ||
+    normalized === 'zero_article'
+  ) {
+    return 'strong';
+  }
+  return null;
 }
 
 function parseGender(value: string): Gender | null {
@@ -100,13 +138,14 @@ export function parseExercises(rawText: string): AdjectiveEndingExercise[] {
   const indexes = {
     sentence: findColumn(headers, COLUMN_ALIASES.sentence),
     ending: findColumn(headers, COLUMN_ALIASES.ending),
+    declension: findColumn(headers, COLUMN_ALIASES.declension),
     caseName: findColumn(headers, COLUMN_ALIASES.caseName),
     gender: findColumn(headers, COLUMN_ALIASES.gender),
     number: findColumn(headers, COLUMN_ALIASES.number),
   };
 
   const missing = Object.entries(indexes)
-    .filter(([, index]) => index === -1)
+    .filter(([name, index]) => name !== 'declension' && index === -1)
     .map(([name]) => name);
 
   if (missing.length > 0) {
@@ -116,6 +155,8 @@ export function parseExercises(rawText: string): AdjectiveEndingExercise[] {
   return lines.slice(1).map((line, lineIndex) => {
     const cells = splitRow(line);
     const sentence = cells[indexes.sentence]?.trim() ?? '';
+    const declension =
+      indexes.declension === -1 ? 'weak' : parseDeclension(cells[indexes.declension] ?? '');
     const caseName = parseCase(cells[indexes.caseName] ?? '');
     const gender = parseGender(cells[indexes.gender] ?? '');
     const number = gender ? parseNumber(cells[indexes.number] ?? '', gender) : null;
@@ -124,14 +165,17 @@ export function parseExercises(rawText: string): AdjectiveEndingExercise[] {
       throw new Error(`Line ${lineIndex + 2}: sentence must include "__".`);
     }
 
-    if (!caseName || !gender || !number) {
-      throw new Error(`Line ${lineIndex + 2}: case, gender, or number is not recognized.`);
+    if (!declension || !caseName || !gender || !number) {
+      throw new Error(
+        `Line ${lineIndex + 2}: declension, case, gender, or number is not recognized.`,
+      );
     }
 
     return {
       id: `upload-${lineIndex}-${sentence}`,
       sentence,
       ending: normalizeEnding(cells[indexes.ending] ?? ''),
+      declension,
       caseName,
       gender,
       number,

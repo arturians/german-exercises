@@ -1,8 +1,14 @@
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from 'react';
 import './adjective-endings.css';
-import { CASES, RULES, SAMPLE_EXERCISES, SINGULAR_GENDERS, TABLE_GENDERS } from './data';
+import {
+  CASES,
+  DECLENSIONS,
+  RULES,
+  SAMPLE_EXERCISES,
+  TABLE_GENDERS,
+} from './data';
 import { normalizeEnding, parseExercises } from './parser';
-import { AdjectiveEndingExercise, Feedback } from './types';
+import { AdjectiveEndingExercise, DeclensionType, Feedback, Gender, GrammarCase } from './types';
 
 type AdjectiveEndingsExerciseProps = {
   onBack: () => void;
@@ -20,7 +26,39 @@ function renderSentence(sentence: string) {
 }
 
 function getRuleKey(exercise: AdjectiveEndingExercise) {
-  return `${exercise.caseName}-${exercise.gender}`;
+  return `${exercise.declension}-${exercise.caseName}-${exercise.gender}`;
+}
+
+function getMergedRuleCells(declension: DeclensionType, caseName: GrammarCase) {
+  return TABLE_GENDERS.reduce<Array<{ ending: string; genders: Gender[] }>>((groups, gender) => {
+    const ending = RULES[declension][caseName][gender];
+    const lastGroup = groups[groups.length - 1];
+
+    if (lastGroup?.ending === ending) {
+      lastGroup.genders.push(gender);
+    } else {
+      groups.push({ ending, genders: [gender] });
+    }
+
+    return groups;
+  }, []);
+}
+
+function getCellLabel(genders: Gender[]) {
+  if (genders.length === TABLE_GENDERS.length) {
+    return 'All';
+  }
+
+  return genders.join(' / ');
+}
+
+function getGenderAbbreviation(gender: Gender) {
+  return {
+    Maskulin: 'Ma',
+    Feminin: 'Fe',
+    Neutrum: 'Ne',
+    Plural: 'Pl',
+  }[gender];
 }
 
 export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExerciseProps) {
@@ -121,7 +159,7 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
           />
           <span className="upload-title">Upload exercise file</span>
           <span className="upload-copy">
-            {fileName || 'CSV or TSV with sentence, ending, case, gender, number'}
+            {fileName || 'CSV or TSV with sentence, ending, declension, case, gender, number'}
           </span>
         </label>
 
@@ -133,8 +171,8 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
 
         <div className="format-note">
           <span>Format</span>
-          <code>sentence,ending,case,gender,number</code>
-          <code>"Der klein__ Hund",-e,Nominativ,Maskulin,Singular</code>
+          <code>sentence,ending,declension,case,gender,number</code>
+          <code>"Ein klein__ Hund",-er,mixed,Nominativ,Maskulin,Singular</code>
         </div>
       </aside>
 
@@ -144,7 +182,10 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
             <p className="eyebrow">Exercise {progress}</p>
             <h2>Choose the adjective ending</h2>
           </div>
-          <div className="status-pill">{currentExercise.caseName}</div>
+          <div className="status-stack">
+            <div className="status-pill">{currentExercise.declension}</div>
+            <div className="status-pill">{currentExercise.caseName}</div>
+          </div>
         </header>
 
         <div className="sentence-panel">
@@ -167,38 +208,62 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
 
           <div aria-live="polite" className={`feedback-line ${feedback}`}>
             {feedback === 'correct'
-              ? `Correct: ${currentExercise.caseName}, ${currentExercise.gender}, ${currentExercise.number}`
+              ? `Correct: ${currentExercise.declension}, ${currentExercise.caseName}, ${currentExercise.gender}, ${currentExercise.number}`
               : ' '}
           </div>
         </div>
 
         <div className={`rules-wrap ${feedback === 'wrong' ? 'shake-error' : ''}`}>
           <table className="rules-table">
-            <caption>Weak adjective ending table</caption>
+            <caption>German adjective ending table</caption>
             <thead>
               <tr>
-                <th scope="col">Case</th>
-                {TABLE_GENDERS.map((gender) => (
-                  <th scope="col" key={gender}>
-                    {gender}
+                <th rowSpan={2} scope="col">
+                  Case
+                </th>
+                {DECLENSIONS.map((declension) => (
+                  <th className="article-group-heading" colSpan={TABLE_GENDERS.length} scope="colgroup" key={declension.id}>
+                    <strong>{declension.label}</strong>
+                    <span>{declension.hint}</span>
                   </th>
                 ))}
+              </tr>
+              <tr>
+                {DECLENSIONS.flatMap((declension) =>
+                  TABLE_GENDERS.map((gender) => (
+                    <th className="gender-heading" scope="col" key={`${declension.id}-${gender}`}>
+                      <abbr title={gender}>{getGenderAbbreviation(gender)}</abbr>
+                    </th>
+                  )),
+                )}
               </tr>
             </thead>
             <tbody>
               {CASES.map((caseName) => (
                 <tr key={caseName}>
-                  <th scope="row">{caseName}</th>
-                  {TABLE_GENDERS.map((gender) => {
-                    const key = `${caseName}-${gender}`;
-                    const singularLabel = SINGULAR_GENDERS.includes(gender) ? 'Sg.' : 'Pl.';
-                    return (
-                      <td className={activeRuleKey === key ? 'active-cell' : ''} key={key}>
-                        <strong>{RULES[caseName][gender]}</strong>
-                        <span>{singularLabel}</span>
-                      </td>
-                    );
-                  })}
+                  <th className="case-cell" scope="row">
+                    {caseName}
+                  </th>
+                  {DECLENSIONS.flatMap((declension) =>
+                    getMergedRuleCells(declension.id, caseName).map(({ ending, genders }, index) => {
+                      const isActive = genders.some(
+                        (gender) => activeRuleKey === `${declension.id}-${caseName}-${gender}`,
+                      );
+
+                      return (
+                        <td
+                          className={`${index === 0 ? 'group-start' : ''} ${
+                            isActive ? 'active-cell' : ''
+                          }`}
+                          colSpan={genders.length}
+                          key={`${caseName}-${declension.id}-${genders.join('-')}`}
+                        >
+                          <strong>{ending}</strong>
+                          <span className="visually-hidden">{getCellLabel(genders)}</span>
+                        </td>
+                      );
+                    }),
+                  )}
                 </tr>
               ))}
             </tbody>

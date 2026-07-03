@@ -126,6 +126,17 @@
   font-weight: 800;
 }
 
+.status-stack {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.status-pill {
+  text-transform: capitalize;
+}
+
 .sentence-panel {
   display: grid;
   gap: 18px;
@@ -200,9 +211,9 @@
 
 .rules-table {
   width: 100%;
-  min-width: 680px;
+  min-width: 760px;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
   background: #fffdf8;
 }
 
@@ -218,8 +229,8 @@
 .rules-table td {
   border-bottom: 1px solid #e7e3da;
   border-right: 1px solid #e7e3da;
-  padding: 16px;
-  text-align: left;
+  padding: 10px;
+  text-align: center;
 }
 
 .rules-table tr:last-child th,
@@ -238,10 +249,47 @@
   font-size: 0.86rem;
 }
 
+.article-group-heading {
+  min-width: 170px;
+  border-left: 2px solid #5e765f;
+}
+
+.article-group-heading strong,
+.article-group-heading span {
+  display: block;
+}
+
+.article-group-heading strong {
+  font-size: 0.92rem;
+}
+
+.article-group-heading span {
+  margin-top: 3px;
+  color: #dfe8db;
+  font-size: 0.74rem;
+}
+
+.gender-heading {
+  min-width: 42px;
+  background: #39543e;
+  font-size: 0.74rem;
+}
+
+.gender-heading abbr {
+  text-decoration: none;
+}
+
 .rules-table tbody th {
   color: #273c2f;
   background: #f7f5ee;
   font-weight: 900;
+}
+
+.case-cell {
+  min-width: 96px;
+  background: #e6efe2;
+  vertical-align: middle;
+  text-align: left;
 }
 
 .rules-table td {
@@ -251,17 +299,22 @@
     box-shadow 160ms ease;
 }
 
+.rules-table td.group-start {
+  border-left: 2px solid #b9c9b4;
+}
+
 .rules-table td strong {
   display: block;
   font-size: 1.22rem;
 }
 
-.rules-table td span {
-  display: block;
-  margin-top: 4px;
-  color: #697369;
-  font-size: 0.78rem;
-  font-weight: 800;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .rules-table td.active-cell {
@@ -323,5 +376,9 @@
   .answer-row button,
   .answer-row input {
     width: 100%;
+  }
+
+  .rules-table {
+    min-width: 720px;
   }
 }
