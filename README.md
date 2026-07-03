@@ -37,3 +37,9 @@ npm install
 npm run dev
 npm run build
 ```
+
+## GitHub Pages
+
+The app deploys from `.github/workflows/deploy.yml` when changes are pushed to
+`main`. In the repository settings, set Pages to use **GitHub Actions** as the
+source.
