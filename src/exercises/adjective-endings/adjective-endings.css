@@ -115,28 +115,6 @@
   margin-bottom: 28px;
 }
 
-.status-pill {
-  flex: 0 0 auto;
-  padding: 8px 12px;
-  border: 1px solid #ced7ca;
-  border-radius: 999px;
-  color: #273c2f;
-  background: #f3f8f1;
-  font-size: 0.88rem;
-  font-weight: 800;
-}
-
-.status-stack {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.status-pill {
-  text-transform: capitalize;
-}
-
 .sentence-panel {
   display: grid;
   gap: 18px;

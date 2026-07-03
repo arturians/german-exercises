@@ -182,10 +182,6 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
             <p className="eyebrow">Exercise {progress}</p>
             <h2>Choose the adjective ending</h2>
           </div>
-          <div className="status-stack">
-            <div className="status-pill">{currentExercise.declension}</div>
-            <div className="status-pill">{currentExercise.caseName}</div>
-          </div>
         </header>
 
         <div className="sentence-panel">
