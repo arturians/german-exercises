@@ -196,51 +196,77 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
   if (!isSetupComplete) {
     return (
       <section className="setup-screen" aria-label="Exercise setup">
-        <div className="setup-card">
-          <header className="setup-header">
-            <div>
-              <p className="eyebrow">Adjective endings</p>
-              <h1>German grammar practice</h1>
-            </div>
-
-            <button className="back-button" type="button" onClick={onBack}>
-              Back to exercises
-            </button>
-          </header>
-
-          <label className="upload-box">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".csv,.tsv,text/csv,text/tab-separated-values,text/plain"
-              onChange={handleUpload}
-            />
-            <span className="upload-title">Upload exercise file</span>
-            <span className="upload-copy">
-              {fileName || 'CSV or TSV with sentence, ending, declension, case, gender, number'}
-            </span>
-          </label>
-
-          <button className="secondary-button" type="button" onClick={skipUpload}>
-            Skip upload
-          </button>
-
-          {error ? <p className="error-message">{error}</p> : null}
-
-          <div className="format-note">
-            <span>Format</span>
-            <code>sentence,ending,declension,case,gender,number</code>
-            <code>"Ein klein__ Hund",-er,mixed,Nominativ,Maskulin,Singular</code>
+        <header className="setup-header">
+          <div>
+            <p className="eyebrow">Adjective endings</p>
+            <h1>Choose sentence source</h1>
           </div>
 
-          <section className="prompt-helper" aria-label="AI prompt helper">
-            <header className="prompt-helper-header">
-              <span>AI prompt</span>
-              <button type="button" onClick={copyPrompt}>
-                {copyStatus || 'Copy'}
-              </button>
-            </header>
-            <pre>{AI_GENERATION_PROMPT}</pre>
+          <button
+            aria-label="Back to exercises"
+            className="back-button"
+            title="Back to exercises"
+            type="button"
+            onClick={onBack}
+          />
+        </header>
+
+        <div className="setup-options">
+          <section className="setup-option setup-option-primary" aria-labelledby="upload-option-title">
+            <div className="option-heading">
+              <span className="option-step">Option 1</span>
+              <h2 id="upload-option-title">Generate a file, then upload it</h2>
+              <p>
+                Copy the prompt into an AI chat, save the CSV response, and upload that file here.
+              </p>
+            </div>
+
+            <div className="prompt-helper" aria-label="AI prompt helper">
+              <header className="prompt-helper-header">
+                <span>Prompt for sentence generation</span>
+                <button type="button" onClick={copyPrompt}>
+                  {copyStatus || 'Copy prompt'}
+                </button>
+              </header>
+              <pre>{AI_GENERATION_PROMPT}</pre>
+            </div>
+
+            <div className="format-note">
+              <span>Expected file row</span>
+              <code>"Ein klein__ Hund",-er,mixed,Nominativ,Maskulin,Singular</code>
+            </div>
+
+            <div className="upload-area">
+              <label className="upload-box">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".csv,.tsv,text/csv,text/tab-separated-values,text/plain"
+                  onChange={handleUpload}
+                />
+                <span className="upload-title">Upload CSV or TSV file</span>
+                <span className="upload-action">Choose file</span>
+                <span className="upload-copy">
+                  {fileName || 'Expected columns: sentence, ending, declension, case, gender, number'}
+                </span>
+              </label>
+
+              {error ? <p className="error-message">{error}</p> : null}
+            </div>
+          </section>
+
+          <section className="setup-option setup-option-secondary" aria-labelledby="examples-option-title">
+            <div className="option-heading">
+              <span className="option-step">Option 2</span>
+              <h2 id="examples-option-title">Start with built-in examples</h2>
+              <p>
+                Skip file creation and practice with the small predefined set already included.
+              </p>
+            </div>
+
+            <button className="secondary-button" type="button" onClick={skipUpload}>
+              Use built-in examples
+            </button>
           </section>
         </div>
       </section>
@@ -255,9 +281,13 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
             <p className="eyebrow">Exercise {progress}</p>
             <h2>Choose the adjective ending</h2>
           </div>
-          <button className="back-button inline-back-button" type="button" onClick={onBack}>
-            Back to exercises
-          </button>
+          <button
+            aria-label="Back to exercises"
+            className="back-button inline-back-button"
+            title="Back to exercises"
+            type="button"
+            onClick={onBack}
+          />
         </header>
 
         <div className="sentence-panel">
