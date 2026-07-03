@@ -14,6 +14,7 @@ type Exercise = {
 };
 
 type Feedback = 'idle' | 'correct' | 'wrong';
+type Screen = 'home' | 'adjective-endings';
 
 const CASES: GrammarCase[] = ['Nominativ', 'Akkusativ', 'Dativ', 'Genitiv'];
 const SINGULAR_GENDERS: Gender[] = ['Maskulin', 'Feminin', 'Neutrum'];
@@ -235,6 +236,7 @@ function getRuleKey(exercise: Exercise) {
 }
 
 export function App() {
+  const [screen, setScreen] = useState<Screen>('home');
   const [exercises, setExercises] = useState<Exercise[]>(SAMPLE_EXERCISES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -311,6 +313,33 @@ export function App() {
     resetQuiz(SAMPLE_EXERCISES, '');
   }
 
+  if (screen === 'home') {
+    return (
+      <main className="app-shell">
+        <section className="home-screen" aria-label="Exercises">
+          <header className="home-header">
+            <p className="eyebrow">German grammar practice</p>
+            <h1>Exercises</h1>
+          </header>
+
+          <div className="exercise-list">
+            <button
+              className="exercise-link"
+              type="button"
+              onClick={() => setScreen('adjective-endings')}
+            >
+              <span>
+                <strong>Adjective endings</strong>
+                <small>Practice endings with case, gender, and number hints.</small>
+              </span>
+              <span aria-hidden="true">Open</span>
+            </button>
+          </div>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="app-shell">
       <section className="workspace">
@@ -319,6 +348,10 @@ export function App() {
             <p className="eyebrow">Adjective endings</p>
             <h1>German grammar practice</h1>
           </div>
+
+          <button className="back-button" type="button" onClick={() => setScreen('home')}>
+            Back to exercises
+          </button>
 
           <label className="upload-box">
             <input

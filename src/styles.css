@@ -38,6 +38,72 @@ button:disabled {
   padding: 24px;
 }
 
+.home-screen {
+  display: grid;
+  gap: 28px;
+  max-width: 760px;
+  margin: 0 auto;
+  padding-top: 52px;
+}
+
+.home-header {
+  display: grid;
+  gap: 8px;
+}
+
+.home-header h1 {
+  font-size: 2.4rem;
+}
+
+.exercise-list {
+  display: grid;
+  gap: 12px;
+}
+
+.exercise-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  width: 100%;
+  min-height: 96px;
+  padding: 18px 20px;
+  border: 1px solid #dedbd2;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #172018;
+  text-align: left;
+  box-shadow: 0 18px 50px rgba(31, 42, 32, 0.08);
+}
+
+.exercise-link strong,
+.exercise-link small {
+  display: block;
+}
+
+.exercise-link strong {
+  font-size: 1.1rem;
+}
+
+.exercise-link small {
+  margin-top: 6px;
+  color: #617062;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.exercise-link > span:last-child {
+  flex: 0 0 auto;
+  min-width: 72px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #273c2f;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 800;
+  text-align: center;
+}
+
 .workspace {
   display: grid;
   grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
@@ -126,6 +192,16 @@ h2 {
   border-radius: 8px;
   background: #273c2f;
   color: #fff;
+  font-weight: 800;
+}
+
+.back-button {
+  width: 100%;
+  min-height: 42px;
+  border: 1px solid #cfd6cc;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #273c2f;
   font-weight: 800;
 }
 
@@ -360,6 +436,19 @@ h2 {
 
   .workspace {
     grid-template-columns: 1fr;
+  }
+
+  .home-screen {
+    padding-top: 20px;
+  }
+
+  .home-header h1 {
+    font-size: 2rem;
+  }
+
+  .exercise-link {
+    align-items: flex-start;
+    flex-direction: column;
   }
 
   .setup-panel,
