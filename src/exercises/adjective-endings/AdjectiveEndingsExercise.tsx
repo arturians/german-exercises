@@ -23,6 +23,24 @@ type AdjectiveEndingsExerciseProps = {
   onBack: () => void;
 };
 
+const AI_GENERATION_PROMPT = `Generate German adjective-ending practice sentences as CSV.
+
+Requirements:
+- Return only CSV text, no markdown.
+- Header must be exactly: sentence,ending,declension,case,gender,number
+- Create 30 rows.
+- In each sentence, put exactly two underscores where the adjective ending belongs.
+- The ending column must contain the correct ending with a leading hyphen, e.g. -e, -en, -er, -es, -em.
+- Use declension values only: weak, mixed, strong.
+- Use case values only: Nominativ, Akkusativ, Dativ, Genitiv.
+- Use gender values only: Maskulin, Feminin, Neutrum, Plural.
+- Use number values only: Singular, Plural.
+- Cover all declension types, all cases, all genders, and plural.
+- Keep sentences natural, short, and suitable for A2-B1 German learners.
+
+Example:
+"Ein klein__ Hund wartet.",-er,mixed,Nominativ,Maskulin,Singular`;
+
 function renderSentence(sentence: string, gap: ReactNode) {
   const [before, after] = sentence.split('__');
   return (
@@ -78,6 +96,7 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
   const [feedback, setFeedback] = useState<Feedback>('idle');
   const [error, setError] = useState('');
   const [fileName, setFileName] = useState('');
+  const [copyStatus, setCopyStatus] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const answerInputRef = useRef<HTMLInputElement>(null);
 
@@ -163,6 +182,17 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
     resetQuiz(SAMPLE_EXERCISES, '');
   }
 
+  async function copyPrompt() {
+    try {
+      await navigator.clipboard.writeText(AI_GENERATION_PROMPT);
+      setCopyStatus('Copied');
+    } catch {
+      setCopyStatus('Copy failed');
+    }
+
+    window.setTimeout(() => setCopyStatus(''), 1800);
+  }
+
   if (!isSetupComplete) {
     return (
       <section className="setup-screen" aria-label="Exercise setup">
@@ -202,6 +232,16 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
             <code>sentence,ending,declension,case,gender,number</code>
             <code>"Ein klein__ Hund",-er,mixed,Nominativ,Maskulin,Singular</code>
           </div>
+
+          <section className="prompt-helper" aria-label="AI prompt helper">
+            <header className="prompt-helper-header">
+              <span>AI prompt</span>
+              <button type="button" onClick={copyPrompt}>
+                {copyStatus || 'Copy'}
+              </button>
+            </header>
+            <pre>{AI_GENERATION_PROMPT}</pre>
+          </section>
         </div>
       </section>
     );

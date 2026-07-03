@@ -122,6 +122,50 @@
   white-space: nowrap;
 }
 
+.prompt-helper {
+  display: grid;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.prompt-helper-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.prompt-helper-header span {
+  color: #273c2f;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.prompt-helper-header button {
+  min-width: 74px;
+  height: 34px;
+  border-radius: 8px;
+  background: #273c2f;
+  color: #fff;
+  font-size: 0.86rem;
+  font-weight: 800;
+}
+
+.prompt-helper pre {
+  max-height: 260px;
+  margin: 0;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid #dedbd2;
+  border-radius: 8px;
+  background: #f7f5ee;
+  color: #283228;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
 .practice-header {
   display: flex;
   align-items: flex-start;
