@@ -1,12 +1,18 @@
-.workspace {
-  display: grid;
-  grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
-  gap: 24px;
+.setup-screen,
+.practice-layout {
   max-width: 1280px;
   margin: 0 auto;
 }
 
-.setup-panel,
+.setup-screen {
+  display: grid;
+  min-height: calc(100vh - 48px);
+  align-items: start;
+  justify-items: center;
+  padding-top: 52px;
+}
+
+.setup-card,
 .practice-area {
   border: 1px solid #dedbd2;
   background: #fffdf8;
@@ -14,12 +20,16 @@
   box-shadow: 0 18px 50px rgba(31, 42, 32, 0.08);
 }
 
-.setup-panel {
-  display: flex;
-  flex-direction: column;
+.setup-card {
+  display: grid;
   gap: 18px;
-  min-height: calc(100vh - 48px);
+  width: min(100%, 560px);
   padding: 22px;
+}
+
+.setup-header {
+  display: grid;
+  gap: 16px;
 }
 
 .practice-area {
@@ -72,6 +82,11 @@
   background: #fffdf8;
   color: #273c2f;
   font-weight: 800;
+}
+
+.inline-back-button {
+  width: auto;
+  padding: 0 14px;
 }
 
 .error-message {
@@ -330,11 +345,12 @@
 }
 
 @media (max-width: 860px) {
-  .workspace {
-    grid-template-columns: 1fr;
+  .setup-screen {
+    min-height: auto;
+    padding-top: 20px;
   }
 
-  .setup-panel,
+  .setup-card,
   .practice-area {
     min-height: auto;
   }

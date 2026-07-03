@@ -62,6 +62,7 @@ function getGenderAbbreviation(gender: Gender) {
 }
 
 export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExerciseProps) {
+  const [isSetupComplete, setIsSetupComplete] = useState(false);
   const [exercises, setExercises] = useState<AdjectiveEndingExercise[]>(SAMPLE_EXERCISES);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answer, setAnswer] = useState('');
@@ -85,6 +86,7 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
     setFeedback('idle');
     setError('');
     setFileName(nextFileName);
+    setIsSetupComplete(true);
   }
 
   async function handleUpload(event: ChangeEvent<HTMLInputElement>) {
@@ -130,7 +132,7 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
     setFeedback('idle');
   }
 
-  function loadSample() {
+  function skipUpload() {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -138,50 +140,61 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
     resetQuiz(SAMPLE_EXERCISES, '');
   }
 
+  if (!isSetupComplete) {
+    return (
+      <section className="setup-screen" aria-label="Exercise setup">
+        <div className="setup-card">
+          <header className="setup-header">
+            <div>
+              <p className="eyebrow">Adjective endings</p>
+              <h1>German grammar practice</h1>
+            </div>
+
+            <button className="back-button" type="button" onClick={onBack}>
+              Back to exercises
+            </button>
+          </header>
+
+          <label className="upload-box">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".csv,.tsv,text/csv,text/tab-separated-values,text/plain"
+              onChange={handleUpload}
+            />
+            <span className="upload-title">Upload exercise file</span>
+            <span className="upload-copy">
+              {fileName || 'CSV or TSV with sentence, ending, declension, case, gender, number'}
+            </span>
+          </label>
+
+          <button className="secondary-button" type="button" onClick={skipUpload}>
+            Skip upload
+          </button>
+
+          {error ? <p className="error-message">{error}</p> : null}
+
+          <div className="format-note">
+            <span>Format</span>
+            <code>sentence,ending,declension,case,gender,number</code>
+            <code>"Ein klein__ Hund",-er,mixed,Nominativ,Maskulin,Singular</code>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section className="workspace">
-      <aside className="setup-panel" aria-label="Exercise setup">
-        <div>
-          <p className="eyebrow">Adjective endings</p>
-          <h1>German grammar practice</h1>
-        </div>
-
-        <button className="back-button" type="button" onClick={onBack}>
-          Back to exercises
-        </button>
-
-        <label className="upload-box">
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv,.tsv,text/csv,text/tab-separated-values,text/plain"
-            onChange={handleUpload}
-          />
-          <span className="upload-title">Upload exercise file</span>
-          <span className="upload-copy">
-            {fileName || 'CSV or TSV with sentence, ending, declension, case, gender, number'}
-          </span>
-        </label>
-
-        <button className="secondary-button" type="button" onClick={loadSample}>
-          Load sample set
-        </button>
-
-        {error ? <p className="error-message">{error}</p> : null}
-
-        <div className="format-note">
-          <span>Format</span>
-          <code>sentence,ending,declension,case,gender,number</code>
-          <code>"Ein klein__ Hund",-er,mixed,Nominativ,Maskulin,Singular</code>
-        </div>
-      </aside>
-
+    <section className="practice-layout">
       <section className="practice-area" aria-label="Quiz">
         <header className="practice-header">
           <div>
             <p className="eyebrow">Exercise {progress}</p>
             <h2>Choose the adjective ending</h2>
           </div>
+          <button className="back-button inline-back-button" type="button" onClick={onBack}>
+            Back to exercises
+          </button>
         </header>
 
         <div className="sentence-panel">
