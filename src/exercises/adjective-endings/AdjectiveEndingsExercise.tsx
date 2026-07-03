@@ -153,7 +153,7 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
     setFeedback('wrong');
     window.setTimeout(() => {
       setFeedback((existing) => (existing === 'wrong' ? 'idle' : existing));
-    }, 520);
+    }, 2400);
   }
 
   function handleAnswerKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -328,6 +328,8 @@ export function AdjectiveEndingsExercise({ onBack }: AdjectiveEndingsExercisePro
           <div aria-live="polite" className={`feedback-line ${feedback}`}>
             {feedback === 'correct'
               ? `Correct: ${currentExercise.declension}, ${currentExercise.caseName}, ${currentExercise.gender}, ${currentExercise.number}`
+              : feedback === 'wrong'
+                ? 'Not quite. Check the highlighted table and try again.'
               : ' '}
           </div>
         </div>

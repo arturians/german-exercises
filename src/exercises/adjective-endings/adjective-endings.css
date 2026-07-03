@@ -380,9 +380,23 @@
 }
 
 .feedback-line {
-  min-height: 22px;
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
   color: #2e6b3f;
   font-weight: 800;
+}
+
+.feedback-line.correct {
+  border-color: #c8dfcd;
+  background: #f0f8f1;
+}
+
+.feedback-line.wrong {
+  border-color: #e1aaa4;
+  background: #fff0ee;
+  color: #8a251f;
 }
 
 .rules-wrap {
